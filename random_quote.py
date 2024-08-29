@@ -2,6 +2,7 @@ import streamlit as st
 import random
 from PIL import Image
 import base64
+import os
 
 # Sample quotes
 quotes = [
@@ -18,30 +19,35 @@ def get_random_quote():
 
 # Function to get base64 encoding of an image
 def get_base64_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
+    try:
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode()
+    except FileNotFoundError:
+        st.error("Image file not found. Please check the path.")
+        return None
 
 # Title of the app
 st.title("Random Quote Generator")
 
 # Display an image
-image_path = r'C:\Users\sayen\Downloads\pexels-suzyhazelwood-1629236.jpg'  # Use raw string
+image_path = r'C:\Users\sayen\Downloads\pexels-suzyhazelwood-1629236.jpg'  # Use relative path
 base64_image = get_base64_image(image_path)
 
-# Generate quote button
-if st.button("Generate Quote"):
-    quote = get_random_quote()
-    st.markdown(
-        f"""
-        <div style="position: relative; text-align: center; color: white;">
-            <img src="data:image/jpeg;base64,{base64_image}" style="width: 100%; height: auto;">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: bold; background-color: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
-                {quote}
+if base64_image:
+    # Generate quote button
+    if st.button("Generate Quote"):
+        quote = get_random_quote()
+        st.markdown(
+            f"""
+            <div style="position: relative; text-align: center; color: white;">
+                <img src="data:image/jpeg;base64,{base64_image}" style="width: 100%; height: auto;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: bold; background-color: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px;">
+                    {quote}
+                </div>
             </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            """,
+            unsafe_allow_html=True
+        )
 
 # Add some styling
 st.markdown(
